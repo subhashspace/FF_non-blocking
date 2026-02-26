@@ -21,73 +21,234 @@ Observe waveforms of inputs and outputs for each flip-flop.
 Verify that outputs match the truth table.
 Save results and capture simulation screenshots.
 # VERILOG CODE
-SR Flip-Flop (Non Blocking)
+### SR Flip-Flop (Non Blocking)
 ```
-module sr_ff (
-    input wire S, R, clk,
-    output reg Q
-);
-    always @(posedge clk) begin
 
+`timescale 1ns / 1ps
 
-
+module sr_ff(S,R,clk,rst,Q);
+input S,R,clk,rst;
+output reg Q;
+always @(posedge clk)
+begin
+if (rst==1)
+    Q=0;
+else    
+    begin
+        case({S,R})
+            2'b00: Q<= Q;
+            2'b01: Q<= 1'b0;
+            2'b10: Q<= 1'b1;
+            2'b11: Q<= 1'bX;
+        endcase
+     end
+end
 endmodule
+
 ```
-SR Flip-Flop Test bench
-
-SIMULATION OUTPUT
-------- paste the output here -------
-
-JK Flip-Flop (Non Blocking)
+### SR Flip-Flop Test bench
 ```
-module jk_ff (
-    input wire J, K, clk,
-    output reg Q
-);
-    always @(posedge clk) begin
 
+`timescale 1ns / 1ps
 
-
+module sr_ff_tb;
+reg S,R,clk,rst;
+wire Q;
+sr_ff uut(S,R,clk,rst,Q);
+initial
+begin
+clk=0;
+S=0;
+R=0;
+rst=1;
+#10;
+rst=0;
+#10;
+S=0;
+R=0;
+#10;
+S=0;
+R=1;
+#10;
+S=1;
+R=0;
+#10;
+S=1;
+R=1;
+#10;
+$finish;
+end
+always #5 clk = ~clk;
 endmodule
+
 ```
-JK Flip-Flop Test bench
+### SIMULATION OUTPUT
 
-SIMULATION OUTPUT
-------- paste the output here -------
+<img width="1920" height="1200" alt="sr_ff" src="https://github.com/user-attachments/assets/4be9b1ea-3ff7-4065-aa9e-2e30524915c7" />
 
-D Flip-Flop (Non Blocking)
+### JK Flip-Flop (Non Blocking)
 ```
-module d_ff (
-    input wire d,clk,
-    output reg Q
-);
-    always @(posedge clk) begin
 
+`timescale 1ns / 1ps
 
-
+module jk_ff(J,K,clk,rst,Q);
+input J,K,clk,rst;
+output reg Q;
+always @(posedge clk)
+begin
+if (rst==0)
+    Q = 0;
+else
+    begin
+        case({J,K})
+            2'b00: Q <= Q;
+            2'b01: Q <= 1'b0;
+            2'b10: Q <= 1'b1;
+            2'b01: Q <= ~Q;
+        endcase
+    end
+end
 endmodule
+
 ```
-D Flip-Flop Test bench
-
-SIMULATION OUTPUT
-------- paste the output here -------
-
-T Flip-Flop (Non Blocking)
+### JK Flip-Flop Test bench
 ```
-module d_ff (
-    input wire d,clk,
-    output reg Q
-);
-    always @(posedge clk) begin
 
+timescale 1ns / 1ps
 
-
+module jk_ff_tb;
+reg J,K,clk,rst;
+wire Q;
+jk_ff uut (J,K,clk,rst,Q);
+initial 
+begin  
+J=0;
+K=0;
+clk=0;
+rst=1;
+#10;
+rst=0;
+#10;
+J=0;
+K=0;
+#10;
+J=0;
+K=1;
+#10;
+J=1;
+K=0;
+#10;
+J=1;
+K=1;
+#10;
+$finish;
+end
+always #5 clk = ~clk;
 endmodule
-```
-T Flip-Flop Test bench
 
-SIMULATION OUTPUT
-------- paste the output here -------
+```
+### SIMULATION OUTPUT
+
+<img width="1920" height="1200" alt="jk_ff" src="https://github.com/user-attachments/assets/d7ce3c35-111b-485b-82b1-cd67ea171509" />
+
+### D Flip-Flop (Non Blocking)
+```
+
+timescale 1ns / 1ps
+
+module d_ff(D,clk,rst,Q);
+input D,clk,rst;
+output reg Q;
+always @(posedge clk)
+begin
+if (rst==1)
+    Q<=0;
+else
+    Q<=D;
+end
+endmodule
+
+```
+### D Flip-Flop Test bench
+```
+
+`timescale 1ns / 1ps
+
+module d_ff_tb;
+reg D,rst,clk;
+wire Q;
+d_ff uut(D,clk,rst,Q);
+initial
+begin
+D=0;
+clk=0;
+rst=1;
+#10;
+rst=0;
+D=0;
+#10;
+D=1;
+#20;
+$finish;
+end
+always #5 clk= ~clk;
+endmodule
+
+```
+### SIMULATION OUTPUT
+
+<img width="1920" height="1200" alt="d_ff" src="https://github.com/user-attachments/assets/300ca46c-6372-4d3c-ad4b-ca069b3e1664" />
+
+### T Flip-Flop (Non Blocking)
+```
+
+timescale 1ns / 1ps
+
+module t_ff(T,clk,rst,Q);
+input T,clk,rst;
+output reg Q;
+always @(posedge clk)
+begin
+if (rst==1)
+    Q <= 0;
+else if (T==0)
+    Q <= Q;
+else
+    Q <= ~Q;
+end
+endmodule
+
+```
+### T Flip-Flop Test bench
+```
+
+timescale 1ns / 1ps
+
+module t_ff_tb;
+reg T,rst,clk;
+wire Q;
+t_ff uut(T,clk,rst,Q);
+initial
+begin
+T=0; 
+clk=0; 
+rst=1; 
+#10;
+rst=0; 
+#10;
+T=0;
+#10;
+T=1; 
+#10;
+$finish;
+end
+always #5 clk = ~clk;
+endmodule
+
+```
+### SIMULATION OUTPUT
+
+<img width="1920" height="1200" alt="t_ff" src="https://github.com/user-attachments/assets/f748348d-8fc9-48ad-9035-97461ae4a720" />
 
 # RESULT
 All flip-flops (SR, D, JK, T) were successfully simulated using Non blocking statements in Verilog HDL. The outputs matched the expected truth table values, demonstrating correct sequential behavior.
